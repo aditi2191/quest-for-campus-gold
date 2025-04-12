@@ -56,7 +56,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userData }) => {
       <div>
         <h4 className="font-medieval text-medieval-brown mb-2">Recent Quests</h4>
         <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
-          {[...userData.accessLogs.dining, ...userData.accessLogs.athletics]
+          {[...userData.accessLogs.feeding, ...userData.accessLogs.training]
             .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
             .slice(0, 5)
             .map((log, index) => (
@@ -78,7 +78,7 @@ const UserStats: React.FC<UserStatsProps> = ({ userData }) => {
               </div>
             ))}
             
-          {[...userData.accessLogs.dining, ...userData.accessLogs.athletics].length === 0 && (
+          {[...userData.accessLogs.feeding, ...userData.accessLogs.training].length === 0 && (
             <div className="text-sm text-medieval-brown/60 italic">
               No quests completed yet. Visit locations to begin your journey!
             </div>

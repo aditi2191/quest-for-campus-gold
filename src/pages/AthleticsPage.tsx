@@ -1,121 +1,89 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from "@/components/ui/button";
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
+import { getUserData, saveUserData, visitLocation, trainingCaves } from '@/utils/gameUtils';
 import LocationCard from '@/components/LocationCard';
 import RewardModal from '@/components/RewardModal';
-import { athleticsLocations, getUserData, UserData, visitLocation } from '@/utils/gameUtils';
+import { useToast } from '@/hooks/use-toast';
 
 const AthleticsPage = () => {
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [rewardData, setRewardData] = useState<{
-    isOpen: boolean;
-    locationName: string;
-    pointsEarned: number;
-    newBadges: string[];
-  }>({
-    isOpen: false,
-    locationName: '',
-    pointsEarned: 0,
-    newBadges: []
-  });
+  const [uid, setUid] = useState<string | null>(null);
+  const [userData, setUserData] = useState(null);
+  const [showReward, setShowReward] = useState(false);
+  const [rewardData, setRewardData] = useState({ locationName: '', pointsEarned: 0, newBadges: [] });
+  const { toast } = useToast();
+  const navigate = useNavigate();
   
-  // Load user data
   useEffect(() => {
-    const storedUid = localStorage.getItem('current-quest-user');
-    
-    if (storedUid) {
-      setUserData(getUserData(storedUid));
+    const storedUid = localStorage.getItem('ember-quest-user');
+    if (!storedUid) {
+      navigate('/');
+      return;
     }
-  }, []);
+    
+    setUid(storedUid);
+    setUserData(getUserData(storedUid));
+  }, [navigate]);
   
-  const handleVisitLocation = (locationId: string, locationName: string) => {
-    if (!userData) return;
-    
-    const result = visitLocation(userData, 'athletics', locationId);
-    
-    // Update local state
-    setUserData(result.userData);
-    
-    // Show reward modal if points were earned
-    if (result.pointsEarned > 0) {
+  const handleVisit = (location) => {
+    try {
+      const result = visitLocation(userData, 'training', location.id);
+      setUserData(result.userData);
       setRewardData({
-        isOpen: true,
-        locationName,
+        locationName: location.name,
         pointsEarned: result.pointsEarned,
         newBadges: result.newBadges
       });
+      setShowReward(true);
+    } catch (error) {
+      toast({
+        title: "Visit Error",
+        description: "Could not record your visit at this time.",
+        variant: "destructive"
+      });
+      console.error(error);
     }
   };
   
-  const handleCloseRewardModal = () => {
-    setRewardData(prev => ({ ...prev, isOpen: false }));
+  const handleLogout = () => {
+    localStorage.removeItem('ember-quest-user');
+    navigate('/');
   };
   
-  if (!userData) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="font-medieval text-xl mb-4">You must register to access this page</h2>
-            <Link to="/">
-              <Button className="medieval-btn">Return to Homepage</Button>
-            </Link>
-          </div>
-        </main>
-      </div>
-    );
-  }
+  if (!userData) return <div>Loading...</div>;
   
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header userData={userData} />
+    <div className="min-h-screen flex flex-col bg-stone-50 text-stone-800">
+      <Header userData={userData} onLogout={handleLogout} />
       
       <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-6 flex items-center">
-            <Link to="/" className="mr-4">
-              <Button variant="outline" size="icon" className="border-medieval-brown h-8 w-8">
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-            </Link>
-            <h1 className="font-uncial text-2xl text-medieval-navy">Royal Athletic Fields</h1>
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-8 text-center">
+            <h1 className="font-uncial text-3xl text-medieval-burgundy mb-2">Training Grounds</h1>
+            <p className="text-medieval-brown">Hone thy skills and build thy strength</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {athleticsLocations.map((location) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {trainingCaves.map((location) => (
               <LocationCard
                 key={location.id}
                 id={location.id}
                 name={location.name}
                 description={location.description}
                 icon={location.icon}
-                serviceType="athletics"
+                serviceType="training"
                 userData={userData}
-                onVisit={() => handleVisitLocation(location.id, location.name)}
+                onVisit={() => handleVisit(location)}
               />
             ))}
-          </div>
-          
-          <div className="mt-10 bg-medieval-parchment border-2 border-medieval-brown rounded-lg p-6">
-            <h2 className="font-medieval text-xl text-medieval-navy mb-3">Champion's Proclamation</h2>
-            <p className="text-medieval-brown mb-4">
-              Noble warriors of the realm! Sharpen thy skills at our training grounds. 
-              Visit each field once per day to earn gold and glory. Those who visit all fields shall be honored with the prestigious "Arena Master" title.
-            </p>
-            <p className="text-medieval-brown italic">
-              — Master of Games
-            </p>
           </div>
         </div>
       </main>
       
       <RewardModal
-        isOpen={rewardData.isOpen}
-        onClose={handleCloseRewardModal}
+        isOpen={showReward}
+        onClose={() => setShowReward(false)}
         locationName={rewardData.locationName}
         pointsEarned={rewardData.pointsEarned}
         newBadges={rewardData.newBadges}
