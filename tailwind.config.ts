@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,21 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Medieval theme colors
+				medieval: {
+					'parchment': '#F5E8C1',
+					'brown': '#8B4513',
+					'gold': '#D4AF37',
+					'burgundy': '#800020',
+					'navy': '#000080',
+					'forest': '#228B22',
+					'stone': '#8E9196'
 				}
+			},
+			fontFamily: {
+				'uncial': ['"Uncial Antiqua"', 'cursive'],
+				'medieval': ['"Cinzel Decorative"', 'cursive']
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +99,33 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'torch-flicker': {
+					'0%, 100%': { 
+						opacity: '1',
+						filter: 'drop-shadow(0 0 8px rgba(255, 165, 0, 0.8))'
+					},
+					'50%': { 
+						opacity: '0.8',
+						filter: 'drop-shadow(0 0 12px rgba(255, 165, 0, 0.5))'
+					}
+				},
+				'gold-sparkle': {
+					'0%, 100%': { 
+						opacity: '0.6',
+						filter: 'drop-shadow(0 0 3px rgba(212, 175, 55, 0.7))'
+					},
+					'50%': { 
+						opacity: '1',
+						filter: 'drop-shadow(0 0 5px rgba(212, 175, 55, 1))'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'torch-flicker': 'torch-flicker 2s ease-in-out infinite',
+				'gold-sparkle': 'gold-sparkle 1.5s ease-in-out infinite'
 			}
 		}
 	},
