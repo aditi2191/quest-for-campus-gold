@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Wand2, Bow } from "lucide-react";
+import { Shield, Wand2, Target } from "lucide-react";
 import { getUserData, saveUserData } from '@/utils/gameUtils';
 import { toast } from '@/hooks/use-toast';
 
@@ -104,7 +104,7 @@ const UserRegistration: React.FC<UserRegistrationProps> = ({ onRegister }) => {
               
               <div className="flex flex-col items-center space-y-2">
                 <div className={`p-4 rounded-full ${role === 'Archer' ? 'bg-medieval-forest text-white' : 'bg-slate-200'}`}>
-                  <Bow className="h-6 w-6" />
+                  <Target className="h-6 w-6" />
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="Archer" id="archer" />
