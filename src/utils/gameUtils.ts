@@ -44,27 +44,27 @@ export const calculateStreak = (
 export const checkBadges = (userData: UserData): string[] => {
   const newBadges: string[] = [];
   
-  // Check dining badges
-  const uniqueDiningVisits = new Set(
-    userData.accessLogs.dining.map(visit => visit.locationId)
+  // Check feeding badges
+  const uniqueFeedingVisits = new Set(
+    userData.accessLogs.feeding.map(visit => visit.locationId)
   );
   
-  if (uniqueDiningVisits.size >= 3) {
-    newBadges.push("Knight of the Feast");
+  if (uniqueFeedingVisits.size >= 3) {
+    newBadges.push("Hungry Hunter");
   }
   
-  // Check athletics badges
-  const uniqueAthleticsVisits = new Set(
-    userData.accessLogs.athletics.map(visit => visit.locationId)
+  // Check training badges
+  const uniqueTrainingVisits = new Set(
+    userData.accessLogs.training.map(visit => visit.locationId)
   );
   
-  if (uniqueAthleticsVisits.size >= 3) {
-    newBadges.push("Arena Master");
+  if (uniqueTrainingVisits.size >= 3) {
+    newBadges.push("Mighty Hunter");
   }
   
   // Check streak badges
   if (userData.streak >= 5) {
-    newBadges.push("Loyal Squire");
+    newBadges.push("Fire Keeper");
   }
   
   return newBadges.filter(badge => !userData.badges.includes(badge));
@@ -72,30 +72,35 @@ export const checkBadges = (userData: UserData): string[] => {
 
 // Get user data with default values
 export const getUserData = (uid: string): UserData => {
-  const storedData = localStorage.getItem(`medieval-quest-${uid}`);
+  const storedData = localStorage.getItem(`ember-quest-${uid}`);
   
   if (storedData) {
     return JSON.parse(storedData);
   }
   
-  // Default user data
-  return {
+  // Default user data with joined timestamp
+  const newUserData = {
     uid,
-    role: "Knight", // default role
+    role: "Hunter", // default role
     streak: 0,
     points: 0,
     lastAccessed: null,
     badges: [],
+    joinedAt: Date.now(), // Add timestamp for leaderboard tiebreaker
     accessLogs: {
-      dining: [],
-      athletics: []
+      feeding: [],
+      training: []
     }
   };
+  
+  // Save the new user data before returning it
+  saveUserData(newUserData);
+  return newUserData;
 };
 
 // Save user data
 export const saveUserData = (userData: UserData): void => {
-  localStorage.setItem(`medieval-quest-${userData.uid}`, JSON.stringify(userData));
+  localStorage.setItem(`ember-quest-${userData.uid}`, JSON.stringify(userData));
 };
 
 // Get all users for leaderboard
@@ -104,7 +109,7 @@ export const getAllUsers = (): UserData[] => {
   
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key && key.startsWith('medieval-quest-')) {
+    if (key && key.startsWith('ember-quest-')) {
       const userData = JSON.parse(localStorage.getItem(key) || '{}');
       users.push(userData);
     }
@@ -121,9 +126,10 @@ export interface UserData {
   points: number;
   lastAccessed: string | null;
   badges: string[];
+  joinedAt?: number; // For leaderboard tiebreakers
   accessLogs: {
-    dining: Visit[];
-    athletics: Visit[];
+    feeding: Visit[];
+    training: Visit[];
   };
 }
 
@@ -134,52 +140,52 @@ export interface Visit {
 }
 
 // Service data
-export const diningLocations = [
+export const feedingCaves = [
   {
-    id: "south",
-    name: "Great Hall of South",
-    description: "A hearty feast awaits thee",
-    icon: "🍗"
+    id: "mosspit",
+    name: "Mosspit",
+    description: "Wild berries and roots await",
+    icon: "🍖"
   },
   {
-    id: "ellicott",
-    name: "Feast of Ellicott",
-    description: "A humble table of champions",
-    icon: "🍺"
+    id: "riverfang",
+    name: "Riverfang",
+    description: "Fresh fish from the rapids",
+    icon: "🐟"
   },
   {
-    id: "north",
-    name: "North Grove Tavern",
-    description: "Rustic charm with hearty meals",
-    icon: "🥖"
+    id: "stonegrill",
+    name: "Stonegrill",
+    description: "Hot rocks cook the finest meats",
+    icon: "🔥"
   }
 ];
 
-export const athleticsLocations = [
+export const trainingCaves = [
   {
-    id: "arena",
-    name: "Royal Arena",
-    description: "Test thy strength and valor",
-    icon: "⚔️"
+    id: "clawstone",
+    name: "Clawstone Crater",
+    description: "Build strength by lifting rocks",
+    icon: "💪"
   },
   {
-    id: "yard",
-    name: "Archery Yard",
-    description: "Hone thy aim under moonlit skies",
+    id: "spearrange",
+    name: "Bone Spear Range",
+    description: "Practice accurate throwing skills",
     icon: "🏹"
   },
   {
-    id: "field",
-    name: "Warrior's Field",
-    description: "Conquer thy battlefield with grace",
-    icon: "🛡️"
+    id: "tarfield",
+    name: "Tarfield Trails",
+    description: "Run through sticky pits for endurance",
+    icon: "👣"
   }
 ];
 
-// Visit location logic
+// Visit location logic - now allowing multiple visits per day
 export const visitLocation = (
   userData: UserData,
-  serviceType: 'dining' | 'athletics',
+  serviceType: 'feeding' | 'training',
   locationId: string
 ): {
   userData: UserData;
@@ -187,25 +193,11 @@ export const visitLocation = (
   newBadges: string[];
 } => {
   const today = getTodayDate();
-  const locations = serviceType === 'dining' ? diningLocations : athleticsLocations;
+  const locations = serviceType === 'feeding' ? feedingCaves : trainingCaves;
   const location = locations.find(loc => loc.id === locationId);
   
   if (!location) {
     throw new Error("Location not found");
-  }
-  
-  // Check if user already visited this location today
-  const alreadyVisitedToday = userData.accessLogs[serviceType].some(visit => 
-    visit.locationId === locationId && 
-    visit.timestamp.startsWith(today)
-  );
-  
-  if (alreadyVisitedToday) {
-    return {
-      userData,
-      pointsEarned: 0,
-      newBadges: []
-    };
   }
   
   // Calculate streak
@@ -267,7 +259,7 @@ export const visitLocation = (
 // Helper to check if a user has visited a location
 export const hasVisitedLocation = (
   userData: UserData,
-  serviceType: 'dining' | 'athletics',
+  serviceType: 'feeding' | 'training',
   locationId: string
 ): boolean => {
   return userData.accessLogs[serviceType].some(visit => visit.locationId === locationId);
@@ -276,7 +268,7 @@ export const hasVisitedLocation = (
 // Helper to check if a user has visited a location today
 export const hasVisitedLocationToday = (
   userData: UserData,
-  serviceType: 'dining' | 'athletics',
+  serviceType: 'feeding' | 'training',
   locationId: string
 ): boolean => {
   const today = getTodayDate();
