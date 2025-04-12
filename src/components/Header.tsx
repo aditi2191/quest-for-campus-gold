@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Crown, Medal, LogOut } from 'lucide-react';
+import { FlameKindling, Medal, LogOut } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { UserData } from '@/utils/gameUtils';
 
@@ -12,12 +12,12 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ userData, onLogout }) => {
   return (
-    <header className="bg-medieval-burgundy text-white shadow-md">
+    <header className="bg-stone-800 text-amber-200 shadow-md">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <Crown className="h-6 w-6 text-medieval-gold animate-gold-sparkle" />
-          <Link to="/" className="font-uncial text-xl tracking-wider">
-            Quest for Campus Gold
+          <FlameKindling className="h-6 w-6 text-amber-500 animate-pulse" />
+          <Link to="/" className="font-pixel text-xl tracking-wider">
+            Quest for Campus Embers
           </Link>
         </div>
         
@@ -25,14 +25,14 @@ const Header: React.FC<HeaderProps> = ({ userData, onLogout }) => {
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center space-x-4">
               <div className="flex items-center space-x-1">
-                <Medal className="h-5 w-5 text-medieval-gold" />
-                <span className="font-medieval">{userData.points} gold</span>
+                <Medal className="h-5 w-5 text-amber-500" />
+                <span className="font-pixel">{userData.points} embers</span>
               </div>
               
               <div className="text-sm">
-                <span className="font-medieval">{userData.role}</span>
+                <span className="font-pixel">{userData.role}</span>
                 <span className="mx-1">•</span>
-                <span className="font-medieval">{userData.uid}</span>
+                <span className="font-pixel">{userData.uid}</span>
               </div>
             </div>
             
@@ -41,10 +41,10 @@ const Header: React.FC<HeaderProps> = ({ userData, onLogout }) => {
                 variant="ghost" 
                 size="sm"
                 onClick={onLogout}
-                className="text-white hover:text-medieval-gold hover:bg-medieval-burgundy/80"
+                className="text-amber-200 hover:text-amber-500 hover:bg-stone-700"
               >
                 <LogOut className="h-4 w-4 mr-1" />
-                <span className="font-medieval text-xs">Logout</span>
+                <span className="font-pixel text-xs">Logout</span>
               </Button>
             )}
           </div>

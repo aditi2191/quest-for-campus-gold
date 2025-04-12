@@ -5,8 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import EmberTotem from "./pages/EmberTotem";
-import FeedingZone from "./pages/FeedingZone";
-import TrainingGround from "./pages/TrainingGround";
+import DiningPage from "./pages/DiningPage";
+import AthleticsPage from "./pages/AthleticsPage";
 import LavaLeaderboard from "./pages/LavaLeaderboard";
 import NotFound from "./pages/NotFound";
 
@@ -20,8 +20,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<EmberTotem />} />
-          <Route path="/feeding" element={<FeedingZone />} />
-          <Route path="/training" element={<TrainingGround />} />
+          <Route path="/feeding" element={<DiningPage />} />
+          <Route path="/training" element={<AthleticsPage />} />
           <Route path="/leaderboard" element={<LavaLeaderboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
