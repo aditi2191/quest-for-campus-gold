@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Trophy, Medal, Award } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import Header from '@/components/Header';
-import UserStats from '@/components/UserStats';
 import { getAllUsers, getUserData, UserData } from '@/utils/gameUtils';
 
 const LavaLeaderboard = () => {
@@ -75,10 +74,7 @@ const LavaLeaderboard = () => {
   
   return (
     <div className="min-h-screen flex flex-col bg-stone-900 text-amber-200">
-      <Header userData={userData} onLogout={userData ? () => {
-        localStorage.removeItem('ember-quest-user');
-        window.location.href = '/';
-      } : undefined} />
+      <Header userData={userData} />
       
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
@@ -90,12 +86,6 @@ const LavaLeaderboard = () => {
             </Link>
             <h1 className="font-pixel text-2xl text-amber-500">Lava Leaderboard</h1>
           </div>
-          
-          {userData && (
-            <div className="mb-8">
-              <UserStats userData={userData} />
-            </div>
-          )}
           
           <div className="bg-stone-800 border-2 border-amber-700 rounded-lg p-6 mb-8">
             <h2 className="font-pixel text-xl text-amber-500 mb-6 text-center">

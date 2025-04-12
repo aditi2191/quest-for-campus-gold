@@ -10,7 +10,7 @@ interface LocationCardProps {
   name: string;
   description: string;
   icon: string;
-  serviceType: 'feeding' | 'training';
+  serviceType: 'dining' | 'athletics';
   userData: UserData;
   onVisit: () => void;
 }
